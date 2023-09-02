@@ -3,9 +3,7 @@ import "./App.css";
 import FormularioCadastro from "./Componente/FormularioCadastro/FormularioCadastro";
 import { Container, Typography } from "@mui/material";
 import '@fontsource/roboto/500.css';
-import DadosPessoais from "./Componente/FormularioCadastro/DadosPessoais";
-import DadosUsuario from "./Componente/FormularioCadastro/DadosUsuario";
-import DadosEntrega from "./Componente/FormularioCadastro/DadosEntrega/DadosEntrega";
+
 
 class App extends Component {
   render(){
@@ -18,9 +16,8 @@ class App extends Component {
         Formulário de cadastro
 
          </Typography>
-        <DadosPessoais aoEnviar={aoEnviarForm} validarCPF={validarCPF}/>
-        <DadosUsuario/>
-        <DadosEntrega/>
+        <FormularioCadastro aoEnviar={aoEnviarForm} validarCPF={validarCPF}/>
+        
       </Container>
     );
   }
