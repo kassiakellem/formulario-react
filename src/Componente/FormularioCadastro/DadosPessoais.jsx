@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 
 import {
   Button,
@@ -7,57 +7,97 @@ import {
   Switch,
   TextField,
 } from "@mui/material";
+import { ValidacaoCadastro } from "../../contexts/ValidacaoCadastro";
 
-function DadosPessoais({ aoEnviar, validarCPF }) {
+function DadosPessoais({ aoEnviar }) {
   const [nome, setNome] = useState("");
   const [sobrenome, setSobrenome] = useState("");
   const [cpf, setCpf] = useState("");
   const [promocoes, setPromocoes] = useState(true);
   const [novidades, setNovidades] = useState(true);
+  const objetosDeValidacao = {
+    cpf: { valido: true, texto: "" },
+    nome: { valido: true, texto: "" },
+    sobrenome: { valido: true, texto: "" },
+  };
+  const [erros, setErros] = useState(objetosDeValidacao);
 
-  const [erros, setErros] = useState({ cpf: { valido: true, texto: "" } });
+  const validacoes = useContext(ValidacaoCadastro);
+
+  function validarCampos(event) {
+    const { name, value } = event.target;
+    validarPeloName(name, value);
+  }
+  function validarPeloName(name, value) {
+    if (validacoes[name] != undefined) {
+      const novoEstado = { ...erros };
+      novoEstado[name] = validacoes[name](value);
+      setErros((estadoAnterior) => novoEstado);
+      console.log(erros);
+    }
+  }
+
+  function possoEnviar() {
+    validarPeloName("nome", nome);
+    for (let campo in erros) {
+      if (!erros[campo].valido) {
+        return false;
+      }
+    }
+    return true;
+  }
 
   return (
     <form
       onSubmit={(event) => {
         event.preventDefault();
-        aoEnviar({ nome, sobrenome, cpf, promocoes, novidades });
+        if (possoEnviar()) {
+          aoEnviar({ nome, sobrenome, cpf, promocoes, novidades });
+        }
       }}
     >
       <TextField
+        onBlur={validarCampos}
+        error={!erros.nome.valido}
+        helperText={erros.nome.texto}
         value={nome}
         onChange={(event) => {
           setNome(event.target.value);
         }}
         id="nome"
         label="Nome"
+        name="nome"
         variant="outlined"
         margin="normal"
         fullWidth
+        required
       />
       <TextField
+        onBlur={validarCampos}
+        error={!erros.sobrenome.valido}
+        helperText={erros.sobrenome.texto}
         value={sobrenome}
         onChange={(event) => {
           setSobrenome(event.target.value);
         }}
         id="sobrenome"
         label="Sobrenome"
+        name="sobrenome"
         variant="outlined"
         margin="normal"
         fullWidth
+        required
       />
       <TextField
         value={cpf}
         onChange={(event) => {
           setCpf(event.target.value);
         }}
-        onBlur={(event) => {
-          const ehValido = validarCPF(cpf);
-          setErros({ cpf: ehValido });
-        }}
+        onBlur={validarCampos}
         error={!erros.cpf.valido}
         helperText={erros.cpf.texto}
         id="cpf"
+        name="cpf"
         label="CPF"
         variant="outlined"
         margin="normal"
@@ -92,7 +132,7 @@ function DadosPessoais({ aoEnviar, validarCPF }) {
       />
 
       <Button type="submit" variant="contained" color="primary">
-        Cadastro
+        Próximo
       </Button>
     </form>
   );
