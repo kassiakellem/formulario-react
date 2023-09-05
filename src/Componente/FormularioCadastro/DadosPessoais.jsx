@@ -8,6 +8,7 @@ import {
   TextField,
 } from "@mui/material";
 import { ValidacaoCadastro } from "../../contexts/ValidacaoCadastro";
+import { useErros } from "../../Hooks/useErros";
 
 function DadosPessoais({ aoEnviar }) {
   const [nome, setNome] = useState("");
@@ -15,38 +16,9 @@ function DadosPessoais({ aoEnviar }) {
   const [cpf, setCpf] = useState("");
   const [promocoes, setPromocoes] = useState(true);
   const [novidades, setNovidades] = useState(true);
-  const objetosDeValidacao = {
-    cpf: { valido: true, texto: "" },
-    nome: { valido: true, texto: "" },
-    sobrenome: { valido: true, texto: "" },
-  };
-  const [erros, setErros] = useState(objetosDeValidacao);
-
   const validacoes = useContext(ValidacaoCadastro);
-
-  function validarCampos(event) {
-    const { name, value } = event.target;
-    validarPeloName(name, value);
-  }
-  function validarPeloName(name, value) {
-    if (validacoes[name] != undefined) {
-      const novoEstado = { ...erros };
-      novoEstado[name] = validacoes[name](value);
-      setErros((estadoAnterior) => novoEstado);
-      console.log(erros);
-    }
-  }
-
-  function possoEnviar() {
-    validarPeloName("nome", nome);
-    for (let campo in erros) {
-      if (!erros[campo].valido) {
-        return false;
-      }
-    }
-    return true;
-  }
-
+  const [erros, validarCampos, possoEnviar] = useErros(validacoes);
+  
   return (
     <form
       onSubmit={(event) => {

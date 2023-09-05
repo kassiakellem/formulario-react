@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Button, TextField } from "@mui/material";
-import { possoEnviar } from "../../possoEnviar";
 
 function DadosEntrega({ aoEnviar, validacoes }) {
   const [cep, setCep] = useState("");
@@ -10,20 +9,12 @@ function DadosEntrega({ aoEnviar, validacoes }) {
   const [cidade, setCidade] = useState("");
   const [erros, setErros] = useState({});
 
-  function validarCampos(event) {
-    const { name, value } = event.target;
-    const novoEstado = { ...erros };
-    novoEstado[name] = validacoes[name](value);
-    setErros(novoEstado);
-    console.log(novoEstado);
-  }
-
   
   return (
     <form
       onSubmit={(event) => {
         event.preventDefault();
-        possoEnviar(erros) && aoEnviar({ cep, endereco, numero, estado, cidade });
+        aoEnviar({ cep, endereco, numero, estado, cidade });
       }}
     >
       <TextField
